@@ -11,6 +11,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class UInputMappingContext;
 class UInputAction;
+class UInventoryData;
 struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
@@ -58,6 +59,10 @@ protected:
 			
 
 protected:
+	virtual void BeginPlay() override;
+
+	UPROPERTY()
+	TObjectPtr<UInventoryData> InventoryData;
 
 	virtual void NotifyControllerChanged() override;
 

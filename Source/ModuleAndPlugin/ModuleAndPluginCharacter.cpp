@@ -1,6 +1,9 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "ModuleAndPluginCharacter.h"
+#include "Test/TestActor.h"
+#include "Test/InventoryData.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Engine/LocalPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -10,6 +13,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -56,6 +60,41 @@ AModuleAndPluginCharacter::AModuleAndPluginCharacter()
 
 //////////////////////////////////////////////////////////////////////////
 // Input
+
+void AModuleAndPluginCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	const FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * 300.0f;
+	const FRotator SpawnRotation = FRotator::ZeroRotator;
+
+	GetWorld()->SpawnActor<ATestActor>(
+		ATestActor::StaticClass(),
+		SpawnLocation,
+		SpawnRotation
+	);
+
+	InventoryData = NewObject<UInventoryData>(this);
+
+	if (IsValid(InventoryData))
+	{
+		const FString InventoryMessage = FString::Printf(
+			TEXT("Inventory - Gold: %d, Potion: %d, Slots: %d"),
+			InventoryData->GetGold(),
+			InventoryData->GetPotionCount(),
+			InventoryData->GetMaxSlotCount()
+		);
+
+		UKismetSystemLibrary::PrintString(
+			this,
+			InventoryMessage,
+			true,
+			true,
+			FLinearColor::Yellow,
+			5.0f
+		);
+	}
+}
 
 void AModuleAndPluginCharacter::NotifyControllerChanged()
 {
